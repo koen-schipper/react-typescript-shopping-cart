@@ -10,10 +10,14 @@ type CartItem = {
 };
 
 type ShoppingCartContext = {
+    openCart: () => void;
+    closeCart: () => void;
     getItemQuantity: (id: number) => number;
     increaseCartQuantity: (id: number) => void;
     decreaseCartQuantity: (id: number) => void;
     removeFromCart: (id: number) => void;
+    cartQuantity: number;
+    cartItems: CartItem[];
 };
 
 const ShoppingCartContext = createContext({} as ShoppingCartContext);
@@ -25,13 +29,14 @@ export function useShoppingCart() {
 export function ShoppingCartProvider({ children }: ShoppingCartProviderProps) {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
+    const cartQuantity = cartItems.reduce((quantity, item) => quantity + item.quantity, 0);
+
     function getItemQuantity(id: number) {
         return cartItems.find(item => item.id === id)?.quantity || 0;
     }
-
     function increaseCartQuantity(id: number) {
         setCartItems(currItems => {
-            if (currItems.find(item => item.id === id) === null) {
+            if (currItems.find(item => item.id === id) == null) {
                 return [...currItems, { id, quantity: 1 }];
             } else {
                 return currItems.map(item => {
@@ -44,7 +49,6 @@ export function ShoppingCartProvider({ children }: ShoppingCartProviderProps) {
             }
         });
     }
-
     function decreaseCartQuantity(id: number) {
         setCartItems(currItems => {
             if (currItems.find(item => item.id === id)?.quantity === 1) {
@@ -60,7 +64,6 @@ export function ShoppingCartProvider({ children }: ShoppingCartProviderProps) {
             }
         });
     }
-
     function removeFromCart(id: number) {
         setCartItems(currItems => currItems.filter(item => item.id !== id));
     }
@@ -71,7 +74,9 @@ export function ShoppingCartProvider({ children }: ShoppingCartProviderProps) {
                 getItemQuantity,
                 increaseCartQuantity,
                 decreaseCartQuantity,
-                removeFromCart
+                removeFromCart,
+                cartItems,
+                cartQuantity
             }}
         >
             {children}
