@@ -9,7 +9,7 @@ type CartItemProps = {
 };
 
 export function CartItem({ id, quantity }: CartItemProps) {
-    const { removeFromCart } = useShoppingCart();
+    const { removeFromCart, increaseCartQuantity, decreaseCartQuantity } = useShoppingCart();
     const item = storeItems.find(i => i.id === id);
     if (item == null) {
         return null;
@@ -26,10 +26,36 @@ export function CartItem({ id, quantity }: CartItemProps) {
                     {formatCurrency(item.price)}
                 </div>
             </div>
-            <div>{formatCurrency(item.price * quantity)}</div>
-            <Button variant='outline-danger' size='sm' onClick={() => removeFromCart(id)}>
-                &times;
-            </Button>
+            <Stack direction='horizontal' gap={2}>
+                <div className='d-inline-grid'>
+                    <div style={{ textAlign: 'center' }}>
+                        {formatCurrency(item.price * quantity)}
+                    </div>
+                    <div>
+                        <Button
+                            variant='outline-danger'
+                            size='sm'
+                            onClick={() => increaseCartQuantity(id)}
+                        >
+                            +
+                        </Button>
+                        <Button
+                            variant='outline-danger'
+                            size='sm'
+                            onClick={() => removeFromCart(id)}
+                        >
+                            &times;
+                        </Button>
+                        <Button
+                            variant='outline-danger'
+                            size='sm'
+                            onClick={() => decreaseCartQuantity(id)}
+                        >
+                            -
+                        </Button>
+                    </div>
+                </div>
+            </Stack>
         </Stack>
     );
 }
